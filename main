@@ -3,18 +3,14 @@ import threading
 import time
 import ctypes
 import win32api
+import json
+
 
 terminate = False
 
-key_mapping = {
-        'e': '3',
-        't': '7',
-        'i': '1',
-        'o': '0',
-        'a': '4',
-        's': '5',
-        'b': '8'
-        }
+with open("1337 key press modifier\config.json") as config_file:
+    config = json.load(config_file)
+    key_mapping = config['key_mapping']
 
 def keyboard_layout():
     user32 = ctypes.windll.user32
