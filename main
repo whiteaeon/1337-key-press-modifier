@@ -1,6 +1,8 @@
 import keyboard
 import threading
 import time
+import ctypes
+import win32api
 
 terminate = False
 
@@ -14,12 +16,32 @@ key_mapping = {
         'b': '8'
         }
 
+def keyboard_layout():
+    user32 = ctypes.windll.user32
+    hwnd = user32.GetForegroundWindow()
+    thread_id = user32.GetWindowThreadProcessId(hwnd, None)
+    layout_id = win32api.GetKeyboardLayout(thread_id)
+    return layout_id
+
+def english_layout():
+    layout_id = keyboard_layout()
+    eng_layout_id = 0x0409
+    primary_lang_id = layout_id & 0xFFFF
+    is_english = primary_lang_id == eng_layout_id
+    return is_english
+
 def modify_key(event):
     global terminate
     
     if event.name == 'esc':
         terminate = True
         return False
+
+    if keyboard.is_pressed('ctrl') or keyboard.is_pressed('alt') or keyboard.is_pressed('shift'):
+        return True
+
+    if not english_layout():
+        return True
 
     key_name = event.name
     if key_name.isupper():
